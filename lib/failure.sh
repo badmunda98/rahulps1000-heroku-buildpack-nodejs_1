@@ -342,6 +342,33 @@ fail_invalid_semver() {
 
 # Yarn 2 failures
 
+fail_using_yarn2_with_yarn_production_environment_variable_set() {
+  local yarn_engine
+  local skip_pruning
+  local log_file="$1"
+
+  if grep -qi 'Unrecognized or legacy configuration settings found: production' "$log_file"; then
+    yarn_engine=$(yarn --version)
+    if [[ "$YARN_PRODUCTION" == "true" ]]; then
+      skip_pruning=false
+    else
+      skip_pruning=true
+    fi
+
+    mcount "failures.yarn2-with-yarn-production-env-set"
+    meta_set "failure" "yarn2-with-yarn-production-env-set"
+    echo ""
+    warn "Legacy Yarn 1.x configuration present:
+
+       Your application uses Yarn v$yarn_engine which does not support the YARN_PRODUCTION environment variable. Please
+       update your heroku config vars to remove YARN_PRODUCTION and set YARN2_SKIP_PRUNING instead.
+
+         $ heroku config:unset YARN_PRODUCTION && heroku config:set YARN2_SKIP_PRUNING=$skip_pruning
+    " https://devcenter.heroku.com/articles/nodejs-support#skip-pruning
+    fail
+  fi
+}
+
 fail_missing_yarnrc_yml() {
   local build_dir="$1"
 
@@ -719,7 +746,7 @@ warn_old_npm() {
   npm_version="$(npm --version)"
 
   if [ "${npm_version:0:1}" -lt "2" ]; then
-    latest_npm="$(curl --silent --get --retry 5 --retry-max-time 15 https://semver.herokuapp.com/npm/stable)"
+    latest_npm="$(curl --silent --get --retry 5 --retry-max-time 15 --retry-connrefused --connect-timeout 5 https://semver.herokuapp.com/npm/stable)"
     warning "This version of npm ($npm_version) has several known issues - consider upgrading to the latest release ($latest_npm)" "https://devcenter.heroku.com/articles/nodejs-support#specifying-an-npm-version"
     mcount 'warnings.npm.old'
   fi

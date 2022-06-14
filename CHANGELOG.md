@@ -1,7 +1,15 @@
 # Node.js Buildpack Changelog
 
 ## main
+
+- Adjust curl retry and connection timeout handling ([#1017](https://github.com/heroku/heroku-buildpack-nodejs/pull/1017))
+- `jq` is no longer installed by the buildpack([#1016](https://github.com/heroku/heroku-buildpack-nodejs/pull/1016))
+- Switch away from deprecated path-based S3 URLs ([#1013](https://github.com/heroku/heroku-buildpack-nodejs/pull/1013))
+
+## v197 (2022-06-07)
 - Drop the `yarn-native-cache` feature flag ([#1004](https://github.com/heroku/heroku-buildpack-nodejs/pull/1004))
+- Fix for `npm ci` caching ([#1009](https://github.com/heroku/heroku-buildpack-nodejs/pull/1009))
+- Fix skip pruning behavior with Yarn 2 ([#1008](https://github.com/heroku/heroku-buildpack-nodejs/pull/1008))
 
 ## v196 (2022-05-31)
 - Add metrics plugin for Node 17 and 18 ([#1002](https://github.com/heroku/heroku-buildpack-nodejs/pull/1002))
